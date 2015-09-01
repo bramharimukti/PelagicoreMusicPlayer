@@ -16,16 +16,12 @@
 **
 ****************************************************************************/
 
-
 import QtQuick 2.0
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
 import QtMultimedia 5.0
 import QtGraphicalEffects 1.0
 
 Item{
     id:musicPlayer
-
 
     /************************************************************************
     ** Internal properties
@@ -34,14 +30,16 @@ Item{
     property bool shuffleMode: false
     property bool muteMode: false
 
-    property int trackStatus: currentTrack.status
-    property int trackDurationMin : 0
-    property int trackDurationSec : 0
-    property int timeElapsedMin : 0
-    property int timeElapsedSec : 0
 
     property string trackAuthor
     property string trackTitle
+    property int trackStatus : currentTrack.status
+    property int trackDurationMin : (currentTrack.duration / (1000*60)) % 60
+    property int trackDurationSec : (currentTrack.duration / 1000) % 60
+    property int timeElapsedMin : (currentTrack.position / (1000*60)) % 60;
+    property int timeElapsedSec : (currentTrack.position / 1000) % 60 ;
+    property int listIndex : 0
+
 
 
     /************************************************************************
@@ -53,62 +51,36 @@ Item{
     }
     Audio{
         id: currentTrack
-        source: "../music/" + songListDelegated.currentItem.songData.musicSource
+        source: "../music/" + songlists.get(listIndex).musicSource
         muted: musicPlayer.muteMode
-        property string currentStatus : currentTrack.status
-    }  
-    Item{
-        id: songListComponentItem
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenterOffset: 130
-        anchors.verticalCenterOffset: 100
-
-        Component{
-            id: songListComponent
-            Item{
-                property variant songData: model
-                width: 250; height: 40
-                Column {
-                    Text { text: '<b>Track Number:</b> ' + model.trackID }
-                    Text { text: '<b>Music Source:</b> ' + model.musicSource }
-                }
-                visible: false
-            }
-        }
-        ListView{
-            id: songListDelegated
-            anchors.fill: parent
-            model: SongList {}
-            delegate: songListComponent
-            focus: true
-        }
     }
-    Timer{
-        id: getTrackInfo
-        interval: 100;
-        running: true
-        repeat: true
+    SongList {
+        id:songlists
+    }
+    Timer {
+        interval: 300; running: true; repeat: true
         onTriggered: {
-            if(trackStatus == 7)
-                gotoNextSong();
-            getTrackInformation();
-            getTrackTotalDuration();
+            if(trackStatus == Audio.EndOfMedia)
+               gotoNextSong();
         }
     }
-
 
     /************************************************************************
     ** Provides the current track information.
     *************************************************************************/
+    Binding{ target: musicPlayer; property: "trackAuthor"; value: currentTrack.metaData.author }
+    Binding{ target: musicPlayer; property: "trackTitle"; value: currentTrack.metaData.title }
+
     Item{
         id:albumIcon
         width: 120
         height: width
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenterOffset: -305
-        property string albumSource: "../music/" + songListDelegated.currentItem.songData.albumSource
+        anchors {
+            verticalCenter: parent.verticalCenter;
+            horizontalCenter: parent.horizontalCenter;
+            horizontalCenterOffset: -305;
+        }
+        property string albumSource: "../music/" + songlists.get(listIndex).albumSource
 
         onAlbumSourceChanged: {
             iconAnimation.start();
@@ -191,10 +163,12 @@ Item{
     }
     Item{
         id: trackInfo
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenterOffset: -30
-        anchors.verticalCenterOffset: 10
+        anchors {
+            verticalCenter: parent.verticalCenter;
+            horizontalCenter: parent.horizontalCenter;
+            horizontalCenterOffset: -30;
+            verticalCenterOffset: 10;
+        }
         Text {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.verticalCenterOffset: -45
@@ -212,10 +186,12 @@ Item{
     }
     Item{
         id: trackTotalDuration
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenterOffset: 330
-        anchors.verticalCenterOffset: 50
+        anchors {
+            verticalCenter: parent.verticalCenter;
+            horizontalCenter: parent.horizontalCenter;
+            horizontalCenterOffset: 335;
+            verticalCenterOffset: 50;
+        }
 
         property string totalMin:{
             if(musicPlayer.trackDurationMin < 10)
@@ -231,6 +207,7 @@ Item{
         }
 
         Text {
+                id:totalDurationInfo
                 anchors.centerIn: parent
                 color: "lightgrey"
                 text: parent.totalMin + ":"+ parent.totalSec
@@ -239,10 +216,12 @@ Item{
     }
     Item{
         id: trackTimeElapsed
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenterOffset: -205
-        anchors.verticalCenterOffset: 50
+        anchors {
+            verticalCenter: parent.verticalCenter;
+            horizontalCenter: parent.horizontalCenter;
+            horizontalCenterOffset: -205;
+            verticalCenterOffset: 50;
+        }
 
         property string currentMin:{
             if(musicPlayer.timeElapsedMin < 10)
@@ -258,6 +237,7 @@ Item{
         }
 
         Text {
+                id:currentTimeElapsed
                 anchors.centerIn: parent
                 color: "lightgrey"
                 text: parent.currentMin + ":"+ parent.currentSec
@@ -271,15 +251,19 @@ Item{
     *************************************************************************/
     Item{
         id:musicController
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenterOffset: -15
-        anchors.verticalCenterOffset: -15
+        anchors {
+            verticalCenter: parent.verticalCenter;
+            horizontalCenter: parent.horizontalCenter;
+            horizontalCenterOffset: -15;
+            verticalCenterOffset: -15;
+        }
         Image {
             id: backward
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenterOffset: -200
+            anchors {
+                verticalCenter: parent.verticalCenter;
+                horizontalCenter: parent.horizontalCenter;
+                horizontalCenterOffset: -200;
+            }
             width: 40;
             fillMode: Image.PreserveAspectFit
             source: "../icons/rewind.png"
@@ -287,21 +271,22 @@ Item{
                 anchors.fill: parent
                 onClicked: {
                     if(!musicPlayer.playing){
-                        if(songListDelegated.currentIndex>0)
-                            songListDelegated.currentIndex = songListDelegated.currentIndex - 1
+                        if(musicPlayer.listIndex>0)
+                            musicPlayer.listIndex = musicPlayer.listIndex - 1;
                     }
-                    else{
-                        gotoPrevSong()
-                    }
+                    else
+                        gotoPrevSong();
                 }
             }
         }
 
         Image {
             id: playpause
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenterOffset: -140
+            anchors {
+                verticalCenter: parent.verticalCenter;
+                horizontalCenter: parent.horizontalCenter;
+                horizontalCenterOffset: -140;
+            }
             width: 40;
             fillMode: Image.PreserveAspectFit
             source: musicPlayer.playing ? "../icons/pause.png" : "../icons/play.png"
@@ -309,11 +294,11 @@ Item{
                 anchors.fill: parent
                 onClicked: {
                     if(musicPlayer.playing) {
-                        currentTrack.pause()
-                        musicPlayer.playing = false
+                        currentTrack.pause();
+                        musicPlayer.playing = false;
                     } else {
-                        currentTrack.play()
-                        musicPlayer.playing = true
+                        currentTrack.play();
+                        musicPlayer.playing = true;
                     }
                 }
             }
@@ -321,9 +306,11 @@ Item{
 
         Image {
             id: forward
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenterOffset: -80
+            anchors {
+                verticalCenter: parent.verticalCenter;
+                horizontalCenter: parent.horizontalCenter;
+                horizontalCenterOffset: -80;
+            }
             width: 40;
             fillMode: Image.PreserveAspectFit
             source: "../icons/forward.png"
@@ -334,8 +321,8 @@ Item{
                         gotoNextSong();
                     }
                     else{
-                        if(songListDelegated.currentIndex + 1 < songListDelegated.count)
-                            songListDelegated.currentIndex = songListDelegated.currentIndex + 1
+                        if(musicPlayer.listIndex + 1 < songlists.count)
+                            musicPlayer.listIndex = musicPlayer.listIndex + 1;
                     }
 
                 }
@@ -345,10 +332,12 @@ Item{
 
         Image {
             id: shuffle
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenterOffset: 350
-            anchors.verticalCenterOffset: 30
+            anchors {
+                verticalCenter: parent.verticalCenter;
+                horizontalCenter: parent.horizontalCenter;
+                horizontalCenterOffset: 350;
+                verticalCenterOffset: 30;
+            }
             width: 30;
             fillMode: Image.PreserveAspectFit
             source: musicPlayer.shuffleMode ? "../icons/shuffle_pressed.png" : "../icons/shuffle.png"
@@ -356,19 +345,21 @@ Item{
                 anchors.fill: parent
                 onClicked: {
                     if(musicPlayer.shuffleMode)
-                        musicPlayer.shuffleMode = false
+                        musicPlayer.shuffleMode = false;
                     else
-                        musicPlayer.shuffleMode = true
+                        musicPlayer.shuffleMode = true;
                 }
             }
         }
 
         Image {
             id: volume
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenterOffset: 350
-            anchors.verticalCenterOffset: -20
+            anchors {
+                verticalCenter: parent.verticalCenter;
+                horizontalCenter: parent.horizontalCenter;
+                horizontalCenterOffset: 350;
+                verticalCenterOffset: -20;
+            }
             width: 30;
             fillMode: Image.PreserveAspectFit
             source: musicPlayer.muteMode ? "../icons/mute.png" : "../icons/volume.png"
@@ -376,60 +367,40 @@ Item{
                 anchors.fill: parent
                 onClicked: {
                     if(musicPlayer.muteMode)
-                        musicPlayer.muteMode = false
+                        musicPlayer.muteMode = false;
                     else
-                        musicPlayer.muteMode = true
+                        musicPlayer.muteMode = true;
                 }
             }
         }
 
     }
-    Slider{
-        id:musicSlider
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenterOffset: 60
-        anchors.verticalCenterOffset: 52
-        width: 460
+    MusicSlider{
+        id:trackslider
+        anchors {
+            verticalCenter: parent.verticalCenter;
+            horizontalCenter: parent.horizontalCenter;
+            horizontalCenterOffset: 65;
+            verticalCenterOffset: 50;
+        }
         maximumValue: currentTrack.duration
-        value: currentTrack.position
-        onPressedChanged: {
-             if (!pressed)
-                currentTrack.seek(value)
-        }
-        onValueChanged: {
-            musicPlayer.getTrackTimeElapsed();
-        }
-        stepSize: 1.0
-        style: SliderStyle {
-            handle: Rectangle {
-                        anchors.centerIn: parent
-                        border.width: 2
-                        implicitWidth: 25
-                        implicitHeight: 25
-                        radius: 20
-                        Image
-                        {
-                          id: handleBackground
-                          source: "../gfx/slider_knob.png"
-                          width: parent.width
-                          height: parent.height
-                          fillMode: Image.Stretch
-                        }
-                    }
+        minimumValue: 0
+        currentValue: currentTrack.position
+
+        onSeekvalueChanged: {
+            currentTrack.seek(seekvalue*maximumValue);
         }
     }
 
-
     /************************************************************************
-    ** Functions required for the control.
+    ** Functions required for the music control.
     *************************************************************************/
     function gotoNextSong(){
         if(shuffleMode)
             shuffleSongList();
         else{
-            if(songListDelegated.currentIndex + 1 < songListDelegated.count){
-                songListDelegated.currentIndex = songListDelegated.currentIndex + 1;
+            if(musicPlayer.listIndex + 1 < songlists.count){
+                musicPlayer.listIndex += 1;
                 currentTrack.play();
                 musicPlayer.playing = true;
             }
@@ -439,13 +410,13 @@ Item{
         if(shuffleMode)
             shuffleSongList();
         else{
-            if(musicPlayer.timeElapsedSec > 5){
+            if(musicPlayer.timeElapsedSec > 3){
                 currentTrack.stop();
                 currentTrack.play();
             }
             else{
-                if(songListDelegated.currentIndex>0){
-                    songListDelegated.currentIndex = songListDelegated.currentIndex - 1
+                if(musicPlayer.listIndex>0){
+                    musicPlayer.listIndex = musicPlayer.listIndex - 1
                     currentTrack.play();
                     musicPlayer.playing = true;
                 }
@@ -456,25 +427,12 @@ Item{
             }
         }
     }
-    function getTrackInformation(){
-        trackAuthor = currentTrack.metaData.author;
-        trackTitle = currentTrack.metaData.title;
-
-    }
-    function getTrackTotalDuration(){
-        trackDurationMin = (currentTrack.duration / (1000*60)) % 60;
-        trackDurationSec   = (currentTrack.duration / 1000) % 60 ;
-    }
-    function getTrackTimeElapsed(){
-        timeElapsedMin = (currentTrack.position / (1000*60)) % 60;
-        timeElapsedSec   = (currentTrack.position / 1000) % 60 ;
-    }
     function shuffleSongList(){
-        var indexSonglist = Math.floor((Math.random() * (songListDelegated.count-1)) + 0);
-        if(indexSonglist == songListDelegated.currentIndex)
-            indexSonglist = Math.floor((Math.random() * (songListDelegated.count-1)) + 0);
+        var indexSonglist = Math.floor((Math.random() * (songlists.count-1)) + 0);
+        if(indexSonglist == musicPlayer.listIndex)
+            indexSonglist = Math.floor((Math.random() * (songlists.count-1)) + 0);
         currentTrack.stop();
-        songListDelegated.currentIndex = indexSonglist;
+        musicPlayer.listIndex = indexSonglist;
         currentTrack.play();
         musicPlayer.playing = true;
     }

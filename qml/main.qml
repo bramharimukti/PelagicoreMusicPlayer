@@ -39,7 +39,6 @@ Window{
           source: "../gfx/background.png"
           width: parent.width
           height: parent.height
-          fillMode: Image.Stretch
         }
 
         /*******************************************************************
@@ -60,7 +59,6 @@ Window{
                 source: "../gfx/bar.png"
                 width: parent.width
                 height: parent.height
-                fillMode: Image.PreserveAspectFit
             }
 
             /***************************************************************
@@ -71,7 +69,6 @@ Window{
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
             }
-
         }
     }
 }
