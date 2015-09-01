@@ -93,7 +93,6 @@ Item{
             anchors.centerIn: parent
             source: "../gfx/cover_frame.png"
             sourceSize: Qt.size(parent.width, parent.height)
-            fillMode: Image.PreserveAspectFit
         }
         Image{
             id: albumImage
@@ -124,7 +123,6 @@ Item{
             anchors.centerIn: parent
             source: "../gfx/cover_overlay.png"
             sourceSize: Qt.size(parent.width, parent.height)
-            fillMode: Image.PreserveAspectFit
         }
         MouseArea {
             anchors.fill: parent
@@ -249,7 +247,7 @@ Item{
 
 
     /************************************************************************
-    ** Provides the music player controller.
+    ** Provides the tools for music player controller.
     *************************************************************************/
     Item{
         id:musicController
@@ -259,123 +257,98 @@ Item{
             horizontalCenterOffset: -15;
             verticalCenterOffset: -15;
         }
-        Image {
-            id: backward
+        Tool{
+            id: toolBackward
             anchors {
                 verticalCenter: parent.verticalCenter;
                 horizontalCenter: parent.horizontalCenter;
                 horizontalCenterOffset: -200;
             }
-            width: 40;
-            fillMode: Image.PreserveAspectFit
-            source: "../icons/rewind.png"
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if(!musicPlayer.playing){
-                        if(musicPlayer.listIndex>0)
-                            musicPlayer.listIndex = musicPlayer.listIndex - 1;
-                    }
-                    else
-                        gotoPrevSong();
+            toolWidth: 40
+            toolSource: "../icons/rewind.png"
+            onClicked: {
+                if(!musicPlayer.playing){
+                    if(musicPlayer.listIndex>0)
+                        musicPlayer.listIndex = musicPlayer.listIndex - 1;
                 }
+                else
+                    gotoPrevSong();
             }
         }
-
-        Image {
-            id: playpause
+        Tool{
+            id: toolPlayPause
             anchors {
                 verticalCenter: parent.verticalCenter;
                 horizontalCenter: parent.horizontalCenter;
                 horizontalCenterOffset: -140;
             }
-            width: 40;
-            fillMode: Image.PreserveAspectFit
-            source: musicPlayer.playing ? "../icons/pause.png" : "../icons/play.png"
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if(musicPlayer.playing) {
-                        currentTrack.pause();
-                        musicPlayer.playing = false;
-                    } else {
-                        currentTrack.play();
-                        musicPlayer.playing = true;
-                    }
+            toolWidth: 40
+            toolSource: musicPlayer.playing ? "../icons/pause.png" : "../icons/play.png"
+            onClicked: {
+                if(musicPlayer.playing) {
+                    currentTrack.pause();
+                    musicPlayer.playing = false;
+                } else {
+                    currentTrack.play();
+                    musicPlayer.playing = true;
                 }
             }
         }
-
-        Image {
-            id: forward
+        Tool{
+            id: toolForward
             anchors {
                 verticalCenter: parent.verticalCenter;
                 horizontalCenter: parent.horizontalCenter;
                 horizontalCenterOffset: -80;
             }
-            width: 40;
-            fillMode: Image.PreserveAspectFit
-            source: "../icons/forward.png"
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if(musicPlayer.playing) {
-                        gotoNextSong();
-                    }
-                    else{
-                        if(musicPlayer.listIndex + 1 < songlists.count)
-                            musicPlayer.listIndex = musicPlayer.listIndex + 1;
-                    }
-
+            toolWidth: 40
+            toolSource: "../icons/forward.png"
+            onClicked: {
+                if(musicPlayer.playing) {
+                    gotoNextSong();
+                }
+                else{
+                    if(musicPlayer.listIndex + 1 < songlists.count)
+                        musicPlayer.listIndex = musicPlayer.listIndex + 1;
                 }
             }
-
         }
 
-        Image {
-            id: shuffle
+        Tool{
+            id: toolShuffle
             anchors {
                 verticalCenter: parent.verticalCenter;
                 horizontalCenter: parent.horizontalCenter;
                 horizontalCenterOffset: 350;
                 verticalCenterOffset: 30;
             }
-            width: 30;
-            fillMode: Image.PreserveAspectFit
-            source: musicPlayer.shuffleMode ? "../icons/shuffle_pressed.png" : "../icons/shuffle.png"
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if(musicPlayer.shuffleMode)
-                        musicPlayer.shuffleMode = false;
-                    else
-                        musicPlayer.shuffleMode = true;
-                }
+            toolWidth: 30
+            toolSource: musicPlayer.shuffleMode ? "../icons/shuffle_pressed.png" : "../icons/shuffle.png"
+            onClicked: {
+                if(musicPlayer.shuffleMode)
+                    musicPlayer.shuffleMode = false;
+                else
+                    musicPlayer.shuffleMode = true;
             }
         }
 
-        Image {
-            id: volume
+        Tool{
+            id: toolVolume
             anchors {
                 verticalCenter: parent.verticalCenter;
                 horizontalCenter: parent.horizontalCenter;
                 horizontalCenterOffset: 350;
                 verticalCenterOffset: -20;
             }
-            width: 30;
-            fillMode: Image.PreserveAspectFit
-            source: musicPlayer.muteMode ? "../icons/mute.png" : "../icons/volume.png"
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if(musicPlayer.muteMode)
-                        musicPlayer.muteMode = false;
-                    else
-                        musicPlayer.muteMode = true;
-                }
+            toolWidth: 30
+            toolSource: musicPlayer.muteMode ? "../icons/mute.png" : "../icons/volume.png"
+            onClicked: {
+                if(musicPlayer.muteMode)
+                    musicPlayer.muteMode = false;
+                else
+                    musicPlayer.muteMode = true;
             }
         }
-
     }
     MusicSlider{
         id:trackslider
