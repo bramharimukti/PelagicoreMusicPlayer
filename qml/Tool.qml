@@ -15,15 +15,15 @@ import QtQuick 2.0
 
 Item{
     id:rootTool
+    width: 40
+    height: width
     property string toolSource
-    property int toolWidth : 0
     signal clicked()
 
     Image {
         id: toolImage
-
         anchors.centerIn: parent
-        width: toolWidth;
+        width: parent.width;
         fillMode: Image.PreserveAspectFit
         source: toolSource
         MouseArea{
