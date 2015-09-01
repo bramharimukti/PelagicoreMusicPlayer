@@ -18,7 +18,6 @@
 
 import QtQuick 2.0
 import QtMultimedia 5.0
-import QtGraphicalEffects 1.0
 
 Item{
     id:musicPlayer
@@ -29,8 +28,6 @@ Item{
     property bool playing: false
     property bool shuffleMode: false
     property bool muteMode: false
-
-
     property string trackAuthor
     property string trackTitle
     property int trackStatus : currentTrack.status
@@ -39,8 +36,6 @@ Item{
     property int timeElapsedMin : (currentTrack.position / (1000*60)) % 60;
     property int timeElapsedSec : (currentTrack.position / 1000) % 60 ;
     property int listIndex : 0
-
-
 
     /************************************************************************
     ** Components required for the music player.
@@ -71,9 +66,7 @@ Item{
     Binding{ target: musicPlayer; property: "trackAuthor"; value: currentTrack.metaData.contributingArtist }
     Binding{ target: musicPlayer; property: "trackTitle"; value: currentTrack.metaData.title }
 
-
-
-    Item{
+    AlbumIcon{
         id:albumIcon
         width: 120
         height: width
@@ -82,84 +75,9 @@ Item{
             horizontalCenter: parent.horizontalCenter;
             horizontalCenterOffset: -305;
         }
-        property string albumSource: "../music/" + songlists.get(listIndex).albumSource
-
-        onAlbumSourceChanged: {
-            iconAnimation.start();
-        }
-
-        Image{
-            id: coverFrame
-            anchors.centerIn: parent
-            source: "../gfx/cover_frame.png"
-            sourceSize: Qt.size(parent.width, parent.height)
-        }
-        Image{
-            id: albumImage
-            anchors.centerIn: parent
-            source: albumIcon.albumSource
-            sourceSize: Qt.size(parent.width-10, parent.height-10)
-            fillMode: Image.PreserveAspectFit
-            smooth: true
-            visible: false
-        }
-        Rectangle{
-            id: albumImagemask
-            anchors.centerIn: parent
-            width:parent.width-10
-            height: parent.height-10
-            radius: 10
-            visible: false
-
-        }
-        OpacityMask{
-            id:albumOpacityMask
-            anchors.fill: albumImage
-            source: albumImage
-            maskSource: albumImagemask
-        }
-        Image{
-            id: coverOverlay
-            anchors.centerIn: parent
-            source: "../gfx/cover_overlay.png"
-            sourceSize: Qt.size(parent.width, parent.height)
-        }
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                iconClickedAnimation.start();
-            }
-        }
-
-        ParallelAnimation{
-            id:iconAnimation
-            NumberAnimation {
-                target: albumImage
-                property: "width"
-                from:80
-                to:120
-                duration: 1000
-                easing.type: Easing.InCurve
-            }
-            PropertyAnimation{
-                target: albumOpacityMask
-                property: "opacity"
-                from: 0.0
-                to: 1.0
-                duration: 2000
-            }
-        }
-        SequentialAnimation{
-            id:iconClickedAnimation
-            NumberAnimation {
-                target: albumImage
-                property: "width"
-                from:80
-                to:120
-                duration: 1000
-                easing.type: Easing.InCurve
-            }
-        }
+        albumSource: "../music/" + songlists.get(listIndex).albumSource
+        coverFrameSource : "../gfx/cover_frame.png"
+        coverOverlaySource : "../gfx/cover_overlay.png"
     }
     Item{
         id: trackInfo
@@ -235,7 +153,6 @@ Item{
             else
                 musicPlayer.timeElapsedSec;
         }
-
         Text {
                 id:currentTimeElapsed
                 anchors.centerIn: parent
@@ -244,7 +161,6 @@ Item{
                 font { family: openSansFont.name; pointSize: 12; }
         }
     }
-
 
     /************************************************************************
     ** Provides the tools for music player controller.
@@ -264,7 +180,8 @@ Item{
                 horizontalCenter: parent.horizontalCenter;
                 horizontalCenterOffset: -200;
             }
-            toolWidth: 40
+            width: 40
+            height: width
             toolSource: "../icons/rewind.png"
             onClicked: {
                 if(!musicPlayer.playing){
@@ -282,7 +199,8 @@ Item{
                 horizontalCenter: parent.horizontalCenter;
                 horizontalCenterOffset: -140;
             }
-            toolWidth: 40
+            width: 40
+            height: width
             toolSource: musicPlayer.playing ? "../icons/pause.png" : "../icons/play.png"
             onClicked: {
                 if(musicPlayer.playing) {
@@ -301,7 +219,8 @@ Item{
                 horizontalCenter: parent.horizontalCenter;
                 horizontalCenterOffset: -80;
             }
-            toolWidth: 40
+            width: 40
+            height: width
             toolSource: "../icons/forward.png"
             onClicked: {
                 if(musicPlayer.playing) {
@@ -313,7 +232,6 @@ Item{
                 }
             }
         }
-
         Tool{
             id: toolShuffle
             anchors {
@@ -322,7 +240,8 @@ Item{
                 horizontalCenterOffset: 350;
                 verticalCenterOffset: 30;
             }
-            toolWidth: 30
+            width: 30
+            height: width
             toolSource: musicPlayer.shuffleMode ? "../icons/shuffle_pressed.png" : "../icons/shuffle.png"
             onClicked: {
                 if(musicPlayer.shuffleMode)
@@ -331,7 +250,6 @@ Item{
                     musicPlayer.shuffleMode = true;
             }
         }
-
         Tool{
             id: toolVolume
             anchors {
@@ -340,7 +258,8 @@ Item{
                 horizontalCenterOffset: 350;
                 verticalCenterOffset: -20;
             }
-            toolWidth: 30
+            width: 30
+            height: width
             toolSource: musicPlayer.muteMode ? "../icons/mute.png" : "../icons/volume.png"
             onClicked: {
                 if(musicPlayer.muteMode)
