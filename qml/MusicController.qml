@@ -68,8 +68,10 @@ Item{
     /************************************************************************
     ** Provides the current track information.
     *************************************************************************/
-    Binding{ target: musicPlayer; property: "trackAuthor"; value: currentTrack.metaData.author }
+    Binding{ target: musicPlayer; property: "trackAuthor"; value: currentTrack.metaData.albumArtist }
     Binding{ target: musicPlayer; property: "trackTitle"; value: currentTrack.metaData.title }
+
+
 
     Item{
         id:albumIcon

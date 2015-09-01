@@ -1,43 +1,54 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
 
-# Folder config file
-Desktop.ini
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
 
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
 
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
+# Executables
+*.exe
+*.out
+*.app
 
-# Windows shortcuts
-*.lnk
+# Qt-es
 
-# =========================
-# Operating System Files
-# =========================
+/.qmake.cache
+/.qmake.stash
+*.pro.user
+*.pro.user.*
+*.moc
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+Makefile*
+*-build-*
 
-# OSX
-# =========================
+# QtCreator
 
+*.autosave
+*~
+
+*.qmlproject.user
+*.qmlproject.user*
 .DS_Store
-.AppleDouble
-.LSOverride
 
-# Thumbnails
-._*
+# packaging/checkinstall
+*.tgz
+*.deb
+CMakeCache.txt
+CMakeFiles
+description-pak
+doc-pak
 
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
+.directory
+core
