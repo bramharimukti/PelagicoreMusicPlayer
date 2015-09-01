@@ -10,6 +10,9 @@
 **  - MusicController.qml : Provides all elements of the Music Player
 **  - SongList.qml : Provides all the song information, such as music direc-
 **                   tories and music albums
+**  - MusicSlider.qml : Generates Slider control to the Music Player
+**  - Tool.qml : Provides an image template for the tools like play, pause, etc.
+**  - AlbumIcon.qml : Generates the album icon based on current track
 **
 ** Copyright (C) 2015 Bramastyo Harimukti Santoso
 ** Contact: bramastyo.harimukti.santoso@gmail.com
